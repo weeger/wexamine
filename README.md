@@ -30,6 +30,12 @@ wexamine.variableSnap('testObject', testObject);
 // Then inspect changes in your console.  
 wexamine.changeLog('testObject', testObject);  
 ```  
+
+Your console will display informations about changes :
+```txt
+wexamine> testObject.chub: object value changed : "foo" to "bar". wexamine.js:251
+wexamine> testObject.baz: object type changed : undefined to string (woop).
+```
   
 Usage  
 -----  

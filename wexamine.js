@@ -1,5 +1,5 @@
 /**
- * wexamine v1.0.0
+ * wexamine v1.0.1
  *
  * Copyright Romain WEEGER 2014
  * http://www.wexample.com
@@ -16,7 +16,7 @@
     this.variablesCache = {};
     this.extendPasses = false;
     this.extendPassesRecursionKey = '__recursion__';
-    this.version = '1.0.0';
+    this.version = '1.0.1';
   };
 
   WexamineProto.prototype = {
@@ -162,12 +162,13 @@
       trace = (trace === undefined) ? 'root' : trace;
       level = (level === undefined) ? 0 : level;
 
-      if ((!Array.isArray(ignore) || ignore.indexOf(trace) !== -1)) {
+      // Trace has been declared into ignore variables.
+      if (Array.isArray(ignore) && ignore.indexOf(trace) !== -1) {
         return output;
       }
 
       // Objects are identical, or one of them has been saved as a recursion.
-      if ((objectA === objectB) || (objectA === this.extendPassesRecursionKey || objectB === this.extendPassesRecursionKey)) {
+      if (objectA === objectB || objectA === this.extendPassesRecursionKey || objectB === this.extendPassesRecursionKey) {
         return output;
       }
 
@@ -255,12 +256,23 @@
       this.log(this.windowCheck());
     },
 
-    log: function (result) {
-      var i;
+    resultToArray: function (result) {
+      var i, output = [];
       for (i in result) {
         if (result.hasOwnProperty(i)) {
-          window.console.log('wexamine> ' + i + ': ' + result[i]);
+          output.push('wexamine> ' + i + ': ' + result[i]);
         }
+      }
+      return output;
+    },
+
+    log: function (result) {
+      // Convert result to array.
+      result = this.resultToArray(result);
+      // Display array in console.
+      var i, length = result.length;
+      for (i = 0; i < length; i++) {
+        window.console.log(result[i]);
       }
     }
   };

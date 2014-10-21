@@ -1,5 +1,5 @@
 /**
- * wexamine v1.0.1
+ * wexamine v1.0.2
  *
  * Copyright Romain WEEGER 2014
  * http://www.wexample.com
@@ -9,14 +9,16 @@
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/licenses/gpl.html
  */
-(function () {
+(function (context) {
   'use strict';
   // <--]
   var WexamineProto = function () {
     this.variablesCache = {};
     this.extendPasses = false;
     this.extendPassesRecursionKey = '__recursion__';
-    this.version = '1.0.1';
+    this.version = '1.0.2';
+    this.color = '#d270b3';
+    this.context = window;
   };
 
   WexamineProto.prototype = {
@@ -101,7 +103,7 @@
 
     globalVariableIgnore: function (variable) {
       return variable === window ||
-        variable === window.document ||
+        variable === this.context.document ||
         // Do no scan wexamine.
         variable === this;
     },
@@ -123,7 +125,7 @@
       }
       // Support: Firefox <20
       // The try/catch suppresses exceptions thrown when attempting to access
-      // the "constructor" property of certain host objects, ie. |window.location|
+      // the "constructor" property of certain host objects, ie. |this.context.location|
       // https://bugzilla.mozilla.org/show_bug.cgi?id=814622
       try {
         if (obj.constructor && !this.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
@@ -174,6 +176,10 @@
 
       typeofA = typeof objectA;
       typeofB = typeof objectB;
+
+      // Special case for null which is typed as "object".
+      typeofA = objectA === null ? 'null' : typeofA;
+      typeofB = objectB === null ? 'null' : typeofB;
 
       if (typeofA !== typeofB) {
         output[trace] = 'object type changed : ' + typeofA +
@@ -272,12 +278,12 @@
       // Display array in console.
       var i, length = result.length;
       for (i = 0; i < length; i++) {
-        window.console.log(result[i]);
+        this.context.console.log('%c ' + result[i], 'color:' + this.color + '; text-shadow:1px 1px 1px rgba(0,0,0,.2);');
       }
     }
   };
   // Create a separated object avoid recursions
   // on sanitizing wexam object.
-  window.wexamine = new WexamineProto();
+  context.wexamine = new WexamineProto();
   // [-->
-}());
+}(window));
